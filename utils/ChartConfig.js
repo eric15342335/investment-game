@@ -1,9 +1,14 @@
+// Import Chart from the global window object since it's loaded via script tag in index.html
+const Chart = window.Chart;
+
 export class ChartConfig {
     static getCommonOptions() {
         return {
             responsive: true,
             maintainAspectRatio: true,
-            animation: true,
+            animation: {
+                duration: 0 // Disable animations for better performance
+            },
             plugins: {
                 legend: {
                     display: true,
@@ -31,7 +36,11 @@ export class ChartConfig {
                         data: [],
                         borderColor: cryptoColor,
                         yAxisID: 'price',
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 0, // Remove points for better performance
+                        spanGaps: true, // Handle missing data points
+                        hidden: false, // Make sure price is visible
+                        borderWidth: 2 // Make it more visible
                     },
                     {
                         type: 'line',
@@ -41,7 +50,9 @@ export class ChartConfig {
                         borderWidth: 2,
                         tension: 0.4,
                         hidden: !showSMA,
-                        yAxisID: 'price'
+                        yAxisID: 'price',
+                        pointRadius: 0,
+                        spanGaps: true
                     }
                 ]
             },

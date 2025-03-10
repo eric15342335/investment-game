@@ -154,6 +154,11 @@ export class CryptoGame {
 
     startGame() {
         this.cleanup();
+        
+        // Destroy old chart instances before creating new ones
+        if (this.charts.price) this.charts.price.destroy();
+        if (this.charts.rsi) this.charts.rsi.destroy();
+        if (this.charts.portfolio) this.charts.portfolio.destroy();
 
         // Create a new worker for price updates
         try {
@@ -191,9 +196,17 @@ export class CryptoGame {
 
     handlePriceUpdate(data) {
         const { cryptoBalances, updates } = data;
+        if (!cryptoBalances || !updates) return;
+
         const time = new Date().toLocaleTimeString();
         
-        // Update the crypto balances with the new prices
+        // Debounce chart updates
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+        }
+        
+        this.updateTimeout = setTimeout(() => {
+            // Update the crypto balances with the new prices
         Object.entries(cryptoBalances).forEach(([crypto, data]) => {
             if (this.cryptoBalances[crypto]) {
                 this.cryptoBalances[crypto].price = data.price;
@@ -236,11 +249,28 @@ export class CryptoGame {
                 updates[this.selectedCrypto].previousPrice
             );
         }
+    this.updateUI();
+}, 100); // Debounce for 100ms
+}
 
-        this.updateUI();
-    }
+// Validate chart data before update
+validateChartData(data) {
+if (!data || !data.labels || !data.price || !data.sma || !data.rsi || !data.portfolio) {
+    console.warn('Invalid chart data format');
+    return false;
+}
+if (data.labels.length !== data.price.length) {
+    console.warn('Mismatched data lengths');
+    return false;
+}
+return true;
+}
+
 
     updateChartData(data) {
+        // Validate data before updating
+        if (!this.validateChartData(data)) return;
+
         // Save chart data before updating charts
         this.saveChartData(data);
 
@@ -355,6 +385,18 @@ export class CryptoGame {
             this.worker.terminate();
             this.worker = null;
         }
+
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+            this.updateTimeout = null;
+        }
+
+        // Clean up all chart instances
+        Object.values(this.charts).forEach(chart => {
+            if (chart) {
+                chart.destroy();
+            }
+        });
         
         if (this.dcaInterval) {
             clearInterval(this.dcaInterval);
@@ -398,7 +440,7 @@ export class CryptoGame {
     }
 
     calculateTotalValue() {
-        const cryptoValue = Object.entries(this.cryptoBalances).reduce((total, [_, data]) => {
+        const cryptoValue = Object.entries(this.cryptoBalances).reduce((total, [, data]) => {
             return total + (data.amount * data.price);
         }, 0);
         return this.usdBalance + cryptoValue;
@@ -449,7 +491,9 @@ export class CryptoGame {
     saveChartData(data) {
         try {
             // Keep only the most recent 100 data points
-            const chartData = {
+            // This chartData variable is declared but never used, which was causing the ESLint warning
+            // Store the data properly in the current crypto's data
+            this.cryptoChartData[this.selectedCrypto] = {
                 labels: data.labels.slice(-100),
                 price: data.price.slice(-100),
                 sma: data.sma.slice(-100),

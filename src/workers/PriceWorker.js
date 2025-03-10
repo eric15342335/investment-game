@@ -211,14 +211,6 @@ self.onmessage = function(e) {
             case 'updateSpeed':
                 config.speedMultiplier = data.multiplier;
                 startUpdates();
-                
-                self.postMessage({
-                    type: 'speedUpdated',
-                    data: {
-                        multiplier: config.speedMultiplier,
-                        interval: getUpdateInterval()
-                    }
-                });
                 break;
                 
             default:
