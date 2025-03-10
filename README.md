@@ -75,6 +75,7 @@ investment-game/
 #### Strategies
 
 The application includes trading strategy implementations:
+
 - Moving Average Crossover: Generates buy/sell signals based on SMA crossovers
 - RSI Strategy: Uses Relative Strength Index to identify overbought/oversold conditions
 
@@ -95,7 +96,3 @@ The application includes trading strategy implementations:
 ## Development
 
 This project was developed by eric15342335 using Roo Code and Claude 3.7 Sonnet (Thinking) with at last USD$5 API usage.
-
-## License
-
-This project is for educational purposes only. All code and assets are owned by their respective creators.
