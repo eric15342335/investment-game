@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Investment Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-controls">
+                <div class="crypto-selector">
+                    <button class="crypto-btn active" data-crypto="BTC">
+                        <span class="material-icons">currency_bitcoin</span>
+                        BTC
+                    </button>
+                    <button class="crypto-btn" data-crypto="ETH">
+                        <span class="material-icons">diamond</span>
+                        ETH
+                    </button>
+                    <button class="crypto-btn" data-crypto="DOGE">
+                        <span class="material-icons">pets</span>
+                        DOGE
+                    </button>
+                </div>
+                <div class="game-speed">
+                    <span class="material-icons">speed</span>
+                    <select id="speedMultiplier">
+                        <option value="1">1x</option>
+                        <option value="2">2x</option>
+                        <option value="5">5x</option>
+                        <option value="10">10x</option>
+                    </select>
+                </div>
+            </div>
+            <div class="price-display">
+                <h1><span id="selectedCrypto">BTC</span>: <span id="cryptoPrice">$0</span></h1>
+                <div class="price-stats">
+                    <div class="price-trend" id="priceTrend"></div>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="portfolio">
+                <div class="balance-card">
+                    <div class="balance-info">
+                        <div class="balance-item">
+                            <span class="label">
+                                <span class="material-icons">attach_money</span>
+                                USD:
+                            </span>
+                            <span class="value">$<span id="usdBalance">10000.00</span></span>
+                        </div>
+                        <div class="crypto-balances" id="cryptoBalances">
+                            <!-- Dynamically filled -->
+                        </div>
+                        <div class="balance-item">
+                            <span class="label">
+                                <span class="material-icons">account_balance</span>
+                                Total:
+                            </span>
+                            <span class="value">$<span id="totalValue">10000.00</span></span>
+                        </div>
+                        <div class="balance-item">
+                            <span class="label">
+                                <span class="material-icons">trending_up</span>
+                                ROI:
+                            </span>
+                            <span class="value"><span id="roi">0.00</span>%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="trading-card">
+                    <div class="trade-controls">
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <label for="buySlider">
+                                    <span class="material-icons">shopping_cart</span>
+                                    Buy Amount (USD)
+                                </label>
+                                <span class="slider-value">$<span id="buySliderValue">0</span></span>
+                            </div>
+                            <input type="range" id="buySlider" min="0" max="10000" step="100" value="0">
+                            <button id="buyBtn" class="buy">
+                                <span class="material-icons">add_circle</span>
+                                Buy
+                            </button>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <label for="sellSlider">
+                                    <span class="material-icons">sell</span>
+                                    Sell Amount (Crypto)
+                                </label>
+                                <span class="slider-value"><span id="sellSliderValue">0</span></span>
+                            </div>
+                            <input type="range" id="sellSlider" min="0" max="1" step="0.0001" value="0">
+                            <button id="sellBtn" class="sell">
+                                <span class="material-icons">remove_circle</span>
+                                Sell
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="strategy-card">
+                    <h3>
+                        <span class="material-icons">auto_mode</span>
+                        Auto Investment
+                    </h3>
+                    <div class="strategy-controls">
+                        <div class="strategy-input">
+                            <label for="dca-amount">
+                                <span class="material-icons">payments</span>
+                                Amount (USD):
+                            </label>
+                            <input type="number" id="dca-amount" min="100" step="100" value="100">
+                        </div>
+                        <div class="strategy-input">
+                            <label for="dca-interval">
+                                <span class="material-icons">timer</span>
+                                Interval (seconds):
+                            </label>
+                            <input type="number" id="dca-interval" min="5" step="5" value="30">
+                        </div>
+                        <button id="dca-toggle" class="strategy-btn">
+                            <span class="material-icons">play_arrow</span>
+                            Start DCA
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Price & Volume</h3>
+                        <div class="indicators">
+                            <label>
+                                <input type="checkbox" id="showSMA" checked>
+                                <span class="material-icons">show_chart</span>
+                                SMA
+                            </label>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>RSI 14</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="rsiChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Portfolio Value</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-stats">
+                <div class="history-header">
+                    <h3>
+                        <span class="material-icons">history</span>
+                        Trading History
+                    </h3>
+                </div>
+                <div id="history" class="history-list"></div>
+            </div>
+        </main>
+    </div>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
